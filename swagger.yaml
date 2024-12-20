@@ -1,0 +1,1843 @@
+openapi: 3.1.0
+info:
+  title: v3-api
+  description: ''
+  license:
+    name: ''
+  version: 0.0.0
+paths:
+  /v1/close-margin-account-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get close margin account instructions.
+        Instruction endpoint does not validate that the margin account to be closed is empty and able to be closed.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_close_margin_account_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseMarginAccountPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/close-margin-account-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get close margin account transaction.
+        Endpoint validates that the margin account can be closed.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_close_margin_account_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseMarginAccountPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/close-position-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get close position instructions.
+        Size delta cannot be 0.
+        Instruction endpoint does not validate that the user has enough margin collateral to make the trade.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_close_position_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClosePositionPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/close-position-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get close position transaction.
+        Endpoint validates that the margin account can afford the trade and that the trade will succeed based on slippage settings.
+        Warning: transaction may still fail due to on-chain state updating after endpoint validation.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_close_position_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClosePositionPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/create-margin-account-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get create margin account instructions.
+        Optionally pass in the new margin account integer ID. Defaults to any unused ID that the API finds.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and margin account ID for the new margin account.
+      operationId: get_create_margin_account_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMarginAccountPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/create-margin-account-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get create margin account transaction.
+        Endpoint validates that the new margin account is not already initialized.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_create_margin_account_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMarginAccountPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/deposit-margin-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get deposit margin instructions.
+        Instruction endpoint does not validate that the user has enough margin collateral tokens in their associated token account to deposit.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_deposit_margin_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositMarginPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/deposit-margin-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get deposit margin transaction.
+        Endpoint validates that the user has enough margin collateral tokens in their associated token account to deposit.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_deposit_margin_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositMarginPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/exchange:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get exchange account and related info.
+        Exchange identifier is optional because there is only 1 exchange currently.
+        Exchange ID=0 / Address=82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW
+      operationId: get_exchange
+      parameters:
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeInfo'
+  /v1/exponents:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get exponents for scaling parcl-v3 values by type.
+        Use these exponents in fixed point math or for displaying values.
+        NOTE: "precise_integer" is the type for the following:
+        1) "last_interaction_funding_per_unit" field on position objects on the MarginAccount response.
+        2) "last_funding_rate" field on the accounting object on the Market response.
+        3) "last_funding_per_unit" field on the accounting object on the Market response.
+        4) "last_funding_per_unit" field on modify position quote.
+      operationId: get_exponents
+      parameters:
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+                propertyNames:
+                  type: string
+              example: '{usd_collateral_and_pnl: -6, trade_size: -6, precise_integer: -15, fill_price: -8, lp_shares: -6, basis_points: -4}'
+  /v1/liquidate-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get liquidate transaction.
+        Instruction endpoint does not validate that the margin account can be liquidated.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_liquidate_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiquidatePayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/liquidate-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get liquidate transaction.
+        Endpoint validates that the margin account can be liquidated.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_liquidate_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiquidatePayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/margin-account:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get margin account and related info.
+        Filter by margin account by 1) passing in the margin account's address or b) passing in both the margin account integer ID and the owner address.
+      operationId: get_margin_account
+      parameters:
+      - name: margin_account_id
+        in: query
+        description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+        required: true
+        schema:
+          type: string
+        example: 0 | 1111111111111111111111111111111111111111111
+      - name: owner
+        in: query
+        description: |-
+          Optional: Address of the margin account's owner.
+          Owner is only optional if margin_account_id is the full address. This is because the margin account integer ID and the owner address are used together to compute the margin account PDA.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 1111111111111111111111111111111111111111111 | null
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarginAccountInfo'
+  /v1/margin-accounts:
+    post:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get multiple margin accounts and relevant info.
+        Input is an array of margin account addresses. Api removes duplicate addresses.
+        Max input length is 100.
+      operationId: get_margin_accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarginAccountsPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                  - type: 'null'
+                  - $ref: '#/components/schemas/MarginAccountInfo'
+  /v1/market:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: Get market account and relevant info.
+      operationId: get_market
+      parameters:
+      - name: market_id
+        in: query
+        description: Either 1) the market's ID used in its PDA or 2) the market's full address.
+        required: true
+        schema:
+          type: string
+        example: 1 | 8QLQf9mA9CC823KXyLRpLCpGbkDSkS4AdSv8LBoMfXjN
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketInfo'
+  /v1/market-ids:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get active market identifiers.
+        Filter response to be 1) mapping of integer ID to address 2) integer IDs only 3) addresses only
+      operationId: get_market_ids
+      parameters:
+      - name: response_kind
+        in: query
+        description: |-
+          Options for response_kind: 1) "map" 2) "addresses" 3) "ids".
+          Default is map.
+          "map" returns map of ids to addresses.
+          "addresses" returns array of addresses.
+          "ids" returns array of integer ids.
+        required: false
+        schema:
+          $ref: '#/components/schemas/MarketIdentifiersResponseKind'
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketIdentifiersResponse'
+              example: '[0] | [8QLQf9mA9CC823KXyLRpLCpGbkDSkS4AdSv8LBoMfXjN] | { 1: 8QLQf9mA9CC823KXyLRpLCpGbkDSkS4AdSv8LBoMfXjN }'
+  /v1/markets:
+    post:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get multiple market accounts and relevant info.
+        Market IDs input is an array where elements are either 1) a market's ID used in its PDA or 2) a market's full address.
+        Api ignores invalid market identifiers and removes duplicates.
+      operationId: get_markets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketsPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarketInfo'
+  /v1/modify-position-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get modify position instructions.
+        Size delta cannot be 0.
+        Instruction endpoint does not validate that the user has enough margin collateral to make the trade.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_modify_position_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyPositionPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/modify-position-quote:
+    post:
+      tags:
+      - Quotes
+      summary: |-
+        Get a quote for modifying a position.
+        Endpoint validates trade is valid.
+      operationId: get_modify_position_quote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyPositionQuotePayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyPositionQuote'
+  /v1/modify-position-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get modify position transaction.
+        Endpoint validates that the margin account can afford the trade and that the trade will succeed based on slippage settings.
+        Warning: transaction may still fail due to on-chain state updating after endpoint validation.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_modify_position_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyPositionPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+  /v1/unhealthy-margin-accounts:
+    get:
+      tags:
+      - Accounts and Metadata
+      summary: |-
+        Get unhealthy margin account addresses for liquidation.
+        Returns empty array if there are no uhealthy accounts.
+        Accounts returned from this endpoint may already be liquidated by other bots.
+      operationId: get_unhealthy_margin_accounts
+      parameters:
+      - name: exchange_id
+        in: query
+        description: |-
+          Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+          Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+        example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example: '[''1111111111111111111111111111111111111111111'', ''1111111111111111111111111111111111111111111'', ''1111111111111111111111111111111111111111111'']'
+  /v1/withdraw-margin-instructions:
+    post:
+      tags:
+      - Instructions
+      summary: |-
+        Get withdraw margin instructions.
+        Instruction endpoint does not validate that the user can successfully withdraw the specified amount of margin collateral.
+        Priority fee percentile is optional.
+        Returns parcl-v3 instruction, compute budget program instructions, and required SOL in lamports.
+      operationId: get_withdraw_margin_instructions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawMarginPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstructionInfo'
+  /v1/withdraw-margin-transaction:
+    post:
+      tags:
+      - Transactions
+      summary: |-
+        Get withdraw margin transaction.
+        Endpoint validates that the requested margin collateral amount to withdraw does not exceed the margin account's available margin collateral to withdraw.
+        Priority fee percentile is optional.
+        Returns base64 encoded transaction and required SOL in lamports.
+      operationId: get_withdraw_margin_transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawMarginPayload'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionInfo'
+components:
+  schemas:
+    AccountMeta:
+      type: object
+      required:
+      - pubkey
+      - is_signer
+      - is_writable
+      properties:
+        is_signer:
+          type: boolean
+        is_writable:
+          type: boolean
+        pubkey:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+    Address:
+      type: string
+    CloseMarginAccountPayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+    ClosePositionPayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      - market_id
+      properties:
+        acceptable_price:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Acceptable price else trade fails. Optional.
+            Acceptable price must be scaled up by the pyth price feed's decimals where a price of 240 with expo of -8 would be 24000000000.
+            If acceptable price is not passed in, then slippage tolerance is used. If both are missing, request fails.
+          example: '24000000000'
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        market_id:
+          type: integer
+          format: int32
+          description: Integer ID of the market to trade.
+          example: 23
+          minimum: 0
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+        slippage_tolerance_bps:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Slippage tolerance is used to derive an acceptable price. Optional.
+            Slippage tolerance is a basis points number passed to API as "200" which means 2% slippage.
+            If slippage tolerance is not passed in, then acceptable price is used. If both are missing, request fails.
+          example: '200'
+          minimum: 0
+    CreateMarginAccountInstructionsResponse:
+      type: object
+      required:
+      - instructions
+      - total_required_lamports
+      - required_compute_lamports
+      - required_rent_lamports
+      - margin_account_address
+      - margin_account_id
+      properties:
+        instructions:
+          $ref: '#/components/schemas/Instructions'
+        margin_account_address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        margin_account_id:
+          type: integer
+          format: int32
+          example: 2
+          minimum: 0
+        required_compute_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        required_rent_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        total_required_lamports:
+          type: integer
+          format: int64
+          example: 400000
+          minimum: 0
+    CreateMarginAccountPayload:
+      type: object
+      required:
+      - owner
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_account_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: integer ID for the new margin account.
+            Default is any unused ID that the API finds.
+          example: 2 | null
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+    CreateMarginAccountTransactionResponse:
+      type: object
+      required:
+      - transaction
+      - total_required_lamports
+      - required_compute_lamports
+      - required_rent_lamports
+      - margin_account_address
+      - margin_account_id
+      properties:
+        margin_account_address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        margin_account_id:
+          type: integer
+          format: int32
+          example: 2
+          minimum: 0
+        required_compute_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        required_rent_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        total_required_lamports:
+          type: integer
+          format: int64
+          example: 400000
+          minimum: 0
+        transaction:
+          $ref: '#/components/schemas/String'
+    DepositMarginPayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      - margin
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin:
+          type: integer
+          format: int64
+          description: |-
+            Integer for the amount of usdc collateral to deposit as margin.
+            Margin value must be scaled up by collateral token's decimals where 1 would be 1000000.
+          example: 25000000
+          minimum: 0
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+    ExchangeIdentifier:
+      oneOf:
+      - $ref: '#/components/schemas/u64'
+      - $ref: '#/components/schemas/Address'
+    ExchangeInfo:
+      type: object
+      required:
+      - address
+      - accounting
+      - settings
+      - id
+      - market_ids
+      - oracle_configs
+      - status
+      - collateral_expo
+      - collateral_mint
+      - collateral_vault
+      - admin
+      - nominated_admin
+      - authorized_settler
+      - authorized_protocol_fees_collector
+      properties:
+        accounting:
+          $ref: '#/components/schemas/ExchangeInfoAccounting'
+        address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        admin:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        authorized_protocol_fees_collector:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        authorized_settler:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        collateral_expo:
+          type: integer
+          format: int32
+          example: -6
+        collateral_mint:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        collateral_vault:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        id:
+          type: integer
+          format: int64
+          example: 0
+          minimum: 0
+        market_ids:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          example: '[23]'
+        nominated_admin:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        oracle_configs:
+          type: array
+          items:
+            $ref: '#/components/schemas/OracleConfig'
+        settings:
+          $ref: '#/components/schemas/ExchangeInfoSettings'
+        status:
+          type: integer
+          format: int32
+          example: 0
+          minimum: 0
+    ExchangeInfoAccounting:
+      type: object
+      required:
+      - notional_open_interest
+      - last_time_locked_open_interest_accounting_refreshed
+      - balance
+      - margin_balance
+      - lp_balance
+      - lp_shares
+      - protocol_fees
+      - unsettled_collateral_amount
+      properties:
+        balance:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        last_time_locked_open_interest_accounting_refreshed:
+          type: integer
+          format: int64
+          minimum: 0
+        lp_balance:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        lp_shares:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        margin_balance:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        notional_open_interest:
+          type: integer
+          example: 25000000
+          minimum: 0
+        protocol_fees:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        unsettled_collateral_amount:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+    ExchangeInfoSettings:
+      type: object
+      required:
+      - min_lp_duration
+      - settlement_delay
+      - min_liquidation_fee
+      - max_liquidation_fee
+      - locked_open_interest_staleness_threshold
+      - protocol_fee_rate
+      - locked_open_interest_ratio
+      - max_keeper_tip_rate
+      properties:
+        locked_open_interest_ratio:
+          type: integer
+          format: int32
+          example: 1500
+          minimum: 0
+        locked_open_interest_staleness_threshold:
+          type: integer
+          format: int64
+          example: 300
+          minimum: 0
+        max_keeper_tip_rate:
+          type: integer
+          format: int32
+          example: 500
+          minimum: 0
+        max_liquidation_fee:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        min_liquidation_fee:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        min_lp_duration:
+          type: integer
+          format: int64
+          example: 2592000
+          minimum: 0
+        protocol_fee_rate:
+          type: integer
+          format: int32
+          example: 2000
+          minimum: 0
+        settlement_delay:
+          type: integer
+          format: int64
+          example: 86400
+          minimum: 0
+    Instruction:
+      type: object
+      required:
+      - program_id
+      - accounts
+      - data
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountMeta'
+        data:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+        program_id:
+          type: string
+          example: 3parcLrT7WnXAcyPfkCz49oofuuf2guUKkjuFkAhZW8Y
+    InstructionInfo:
+      type: object
+      required:
+      - instructions
+      - total_required_lamports
+      - required_compute_lamports
+      - required_rent_lamports
+      - cu_limit
+      properties:
+        cu_limit:
+          type: integer
+          format: int32
+          example: 450000
+          minimum: 0
+        instructions:
+          $ref: '#/components/schemas/Instructions'
+        required_compute_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        required_rent_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        total_required_lamports:
+          type: integer
+          format: int64
+          example: 400000
+          minimum: 0
+    Instructions:
+      type: object
+      required:
+      - v3_instructions
+      - compute_budget_instructions
+      properties:
+        compute_budget_instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+        v3_instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+    LiquidatePayload:
+      type: object
+      required:
+      - margin_account_to_liquidate
+      - liquidator
+      - liquidator_margin_account_id
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        liquidator:
+          type: string
+          description: Address of the liquidator.
+          example: '1111111111111111111111111111111111111111111'
+        liquidator_margin_account_id:
+          type: string
+          description: Either 1) the liquidator margin account's ID used in its PDA or 2) the liquidator margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        margin_account_to_liquidate:
+          type: string
+          description: Address of the margin account to liquidate.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+    MarginAccountIdentifier:
+      oneOf:
+      - $ref: '#/components/schemas/u32'
+      - $ref: '#/components/schemas/Address'
+    MarginAccountInfo:
+      type: object
+      required:
+      - address
+      - id
+      - active_market_ids
+      - positions
+      - margins
+      - margin
+      - excess_margin
+      - exchange
+      - owner
+      - delegate
+      - can_close
+      - can_liquidate
+      - in_liquidation
+      properties:
+        active_market_ids:
+          type: array
+          items:
+            type: integer
+            format: int32
+            minimum: 0
+          example: '[23]'
+        address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        can_close:
+          type: boolean
+          example: false
+        can_liquidate:
+          type: boolean
+          example: false
+        delegate:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        excess_margin:
+          type: integer
+          format: int64
+          minimum: 0
+        exchange:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        id:
+          type: integer
+          format: int32
+          example: 2
+          minimum: 0
+        in_liquidation:
+          type: boolean
+          example: false
+        margin:
+          type: integer
+          format: int64
+          minimum: 0
+        margins:
+          $ref: '#/components/schemas/Margins'
+        owner:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionInfo'
+    MarginAccountsPayload:
+      type: object
+      required:
+      - margin_accounts
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_accounts:
+          type: array
+          items:
+            type: string
+          description: |-
+            Array of margin account addresses.
+            Api removes duplicate identifiers.
+          example: '[''1111111111111111111111111111111111111111111'', ''1111111111111111111111111111111111111111111'', ''1111111111111111111111111111111111111111111'']'
+    Margins:
+      type: object
+      required:
+      - available_margin
+      - total_required_margin
+      - required_initial_margin
+      - required_maintenance_margin
+      - required_liquidation_fee_margin
+      - accumulated_liquidation_fees
+      properties:
+        accumulated_liquidation_fees:
+          type: integer
+          format: int64
+          minimum: 0
+        available_margin:
+          type: integer
+        required_initial_margin:
+          type: integer
+          format: int64
+          minimum: 0
+        required_liquidation_fee_margin:
+          type: integer
+          format: int64
+          minimum: 0
+        required_maintenance_margin:
+          type: integer
+          format: int64
+          minimum: 0
+        total_required_margin:
+          type: integer
+          format: int64
+          minimum: 0
+    MarketIdentifier:
+      oneOf:
+      - $ref: '#/components/schemas/u32'
+      - $ref: '#/components/schemas/Address'
+    MarketIdentifiersResponse:
+      oneOf:
+      - type: object
+        required:
+        - Map
+        properties:
+          Map:
+            type: object
+            additionalProperties:
+              type: string
+            propertyNames:
+              type: integer
+              format: int32
+              minimum: 0
+      - type: object
+        required:
+        - Ids
+        properties:
+          Ids:
+            type: array
+            items:
+              $ref: '#/components/schemas/u32'
+      - type: object
+        required:
+        - Addresses
+        properties:
+          Addresses:
+            type: array
+            items:
+              type: string
+    MarketIdentifiersResponseKind:
+      type: string
+      enum:
+      - map
+      - addresses
+      - ids
+    MarketInfo:
+      type: object
+      required:
+      - address
+      - price_feed_info
+      - accounting
+      - settings
+      - id
+      - exchange
+      - price_feed
+      - status
+      properties:
+        accounting:
+          $ref: '#/components/schemas/MarketInfoAccounting'
+        address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        exchange:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        id:
+          type: integer
+          format: int32
+          example: 23
+          minimum: 0
+        price_feed:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        price_feed_info:
+          $ref: '#/components/schemas/PriceFeedInfo'
+        settings:
+          $ref: '#/components/schemas/MarketInfoSettings'
+        status:
+          type: integer
+          format: int32
+          example: 0
+          minimum: 0
+    MarketInfoAccounting:
+      type: object
+      required:
+      - last_utilized_liquidation_capacity
+      - size
+      - skew
+      - last_funding_rate
+      - last_funding_per_unit
+      - last_time_funding_updated
+      - first_liquidation_epoch_start_time
+      - last_liquidation_epoch_index
+      - last_time_liquidation_capacity_updated
+      properties:
+        first_liquidation_epoch_start_time:
+          type: integer
+          format: int64
+          example: 1733180254
+          minimum: 0
+        last_funding_per_unit:
+          type: string
+          example: '-23815391293332465'
+        last_funding_rate:
+          type: string
+          example: '-3545008663811'
+        last_liquidation_epoch_index:
+          type: integer
+          format: int64
+          example: 24
+          minimum: 0
+        last_time_funding_updated:
+          type: integer
+          format: int64
+          example: 1733180254
+          minimum: 0
+        last_time_liquidation_capacity_updated:
+          type: integer
+          format: int64
+          example: 1733180254
+          minimum: 0
+        last_utilized_liquidation_capacity:
+          type: integer
+          example: 50000000
+          minimum: 0
+        size:
+          type: integer
+          example: 50000000
+          minimum: 0
+        skew:
+          type: integer
+          example: -50000000
+    MarketInfoSettings:
+      type: object
+      required:
+      - min_position_margin
+      - skew_scale
+      - max_side_size
+      - max_liquidation_limit_accumulation_multiplier
+      - max_seconds_in_liquidation_epoch
+      - initial_margin_ratio
+      - maker_fee_rate
+      - taker_fee_rate
+      - max_funding_velocity
+      - liquidation_fee_rate
+      - min_initial_margin_ratio
+      - maintenance_margin_proportion
+      - max_liquidation_pd
+      - authorized_liquidator
+      properties:
+        authorized_liquidator:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        initial_margin_ratio:
+          type: integer
+          format: int32
+          example: 40000
+          minimum: 0
+        liquidation_fee_rate:
+          type: integer
+          format: int32
+          example: 1
+          minimum: 0
+        maintenance_margin_proportion:
+          type: integer
+          format: int32
+          example: 8000
+          minimum: 0
+        maker_fee_rate:
+          type: integer
+          format: int32
+          example: 6
+          minimum: 0
+        max_funding_velocity:
+          type: integer
+          format: int32
+          example: 3600
+          minimum: 0
+        max_liquidation_limit_accumulation_multiplier:
+          type: integer
+          format: int64
+          minimum: 0
+        max_liquidation_pd:
+          type: integer
+          format: int32
+          example: 200
+          minimum: 0
+        max_seconds_in_liquidation_epoch:
+          type: integer
+          format: int64
+          example: 30
+          minimum: 0
+        max_side_size:
+          type: integer
+          example: 50000000
+          minimum: 0
+        min_initial_margin_ratio:
+          type: integer
+          format: int32
+          example: 400
+          minimum: 0
+        min_position_margin:
+          type: integer
+          example: 25000000
+          minimum: 0
+        skew_scale:
+          type: integer
+          example: 50000000
+          minimum: 0
+        taker_fee_rate:
+          type: integer
+          format: int32
+          example: 7
+          minimum: 0
+    MarketsPayload:
+      type: object
+      required:
+      - market_ids
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        market_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketIdentifier'
+          description: |-
+            Array where elements are either 1) a market's ID used in its PDA or 2) a market's full address.
+            Api removes duplicate market identifiers.
+          example: '[1 | 1111111111111111111111111111111111111111111, 12 | 1111111111111111111111111111111111111111111, 23 | 1111111111111111111111111111111111111111111]'
+    ModifyPositionPayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      - market_id
+      - size_delta
+      properties:
+        acceptable_price:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Acceptable price else trade fails. Optional.
+            Acceptable price must be scaled up by the pyth price feed's decimals where a price of 240 with expo of -8 would be 24000000000.
+            If acceptable price is not passed in, then slippage tolerance is used. If both are missing, request fails.
+          example: '24000000000'
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        market_id:
+          type: integer
+          format: int32
+          description: Integer ID of the market to trade.
+          example: 23
+          minimum: 0
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+        size_delta:
+          type: string
+          description: |-
+            Size delta is the amount of base asset units to trade. Ex. 25 sqft or .5 SOL.
+            Size delta must be scaled up by 6 decimals where 25 sqft would be 25000000 and .5 SOL would be 500000.
+          example: '-50000000'
+        slippage_tolerance_bps:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Slippage tolerance is used to derive an acceptable price. Optional.
+            Slippage tolerance is a basis points number passed to API as "200" which means 2% slippage.
+            If slippage tolerance is not passed in, then acceptable price is used. If both are missing, request fails.
+          example: '200'
+          minimum: 0
+    ModifyPositionQuote:
+      type: object
+      required:
+      - margin_account_address
+      - margin_account_id
+      - market_id
+      - size_delta
+      - acceptable_price
+      - total_required_margin
+      - new_position_size
+      - fill_price
+      - last_interaction_funding_per_unit
+      - index_price
+      - trade_fee
+      - position_initial_margin_ratio
+      - position_maintenance_margin_ratio
+      properties:
+        acceptable_price:
+          type: integer
+          format: int64
+          description: |-
+            Acceptable price or else trade fails.
+            Acceptable price is scaled by the protocol's price expo of -8. Price of 240 with expo of -8 would be 24000000000.
+          example: '24000000000'
+          minimum: 0
+        fill_price:
+          type: integer
+          format: int64
+          description: Price the trade would execute at if you immediately executed the trade.
+          example: 24300000000
+          minimum: 0
+        index_price:
+          type: integer
+          format: int64
+          description: Current index price for the market.
+          example: 24300000000
+          minimum: 0
+        last_interaction_funding_per_unit:
+          type: string
+          description: Entry funding per unit for the position if you immediately executed the trade.
+          example: '-23815391293332465'
+        margin_account_address:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+        margin_account_id:
+          type: integer
+          format: int32
+          example: 2
+          minimum: 0
+        market_id:
+          type: integer
+          format: int32
+          description: Integer ID of the market to trade.
+          example: 23
+          minimum: 0
+        new_position_size:
+          type: integer
+          description: New position size if the trade were to be executed.
+          example: 50000000
+        position_initial_margin_ratio:
+          type: number
+          format: double
+          description: Position's initial margin ratio.
+          example: 0.04
+        position_maintenance_margin_ratio:
+          type: number
+          format: double
+          description: Position's maintenance margin ratio.
+          example: 0.032
+        size_delta:
+          type: integer
+          description: |-
+            Size delta is the amount of base asset units to trade. Ex. 25 sqft or .5 SOL.
+            Size delta must be scaled up by 6 decimals where 25 sqft would be 25000000 and .5 SOL would be 500000.
+          example: -50000000
+        total_required_margin:
+          type: integer
+          format: int64
+          description: Total required margin in usd collateral that the margin account must maintain to open this new position.
+          example: 25000000
+          minimum: 0
+        trade_fee:
+          type: integer
+          format: int64
+          description: Trade fee you would pay if you immediately executed the trade
+          example: 25000000
+          minimum: 0
+    ModifyPositionQuotePayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      - market_id
+      - size_delta
+      properties:
+        acceptable_price:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Acceptable price else trade fails. Optional.
+            Acceptable price must be scaled up by the pyth price feed's decimals where a price of 240 with expo of -8 would be 24000000000.
+            If acceptable price is not passed in, then slippage tolerance is used. If both are missing, request fails.
+          example: '24000000000'
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        market_id:
+          type: integer
+          format: int32
+          description: Integer ID of the market to trade.
+          example: 23
+          minimum: 0
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        size_delta:
+          type: string
+          description: |-
+            Size delta is the amount of base asset units to trade. Ex. 25 sqft or .5 SOL.
+            Size delta must be scaled up by 6 decimals where 25 sqft would be 25000000 and .5 SOL would be 500000.
+          example: '-50000000'
+        slippage_tolerance_bps:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: |-
+            Slippage tolerance is used to derive an acceptable price. Optional.
+            Slippage tolerance is a basis points number passed to API as "200" which means 2% slippage.
+            If slippage tolerance is not passed in, then acceptable price is used. If both are missing, request fails.
+          example: '200'
+          minimum: 0
+    OracleConfig:
+      type: object
+      required:
+      - kind
+      - program_id
+      properties:
+        kind:
+          $ref: '#/components/schemas/OracleKind'
+        program_id:
+          type: string
+          example: '1111111111111111111111111111111111111111111'
+    OracleKind:
+      type: string
+      enum:
+      - pyth
+      - parcl
+      - pyth-v2
+    PositionInfo:
+      type: object
+      required:
+      - size
+      - last_interaction_price
+      - last_interaction_funding_per_unit
+      - market_id
+      properties:
+        last_interaction_funding_per_unit:
+          type: string
+          example: '-23815391293332465'
+        last_interaction_price:
+          type: integer
+          example: 24300000000
+          minimum: 0
+        market_id:
+          type: integer
+          format: int32
+          example: 23
+          minimum: 0
+        size:
+          type: integer
+          example: -50000000
+    PriceFeedInfo:
+      type: object
+      required:
+      - price
+      - expo
+      properties:
+        expo:
+          type: integer
+          format: int32
+          example: -8
+        price:
+          type: integer
+          format: int64
+          example: 24300000000
+          minimum: 0
+    String:
+      type: string
+    TransactionInfo:
+      type: object
+      required:
+      - transaction
+      - total_required_lamports
+      - required_compute_lamports
+      - required_rent_lamports
+      - cu_limit
+      properties:
+        cu_limit:
+          type: integer
+          format: int32
+          example: 450000
+          minimum: 0
+        required_compute_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        required_rent_lamports:
+          type: integer
+          format: int64
+          example: 200000
+          minimum: 0
+        total_required_lamports:
+          type: integer
+          format: int64
+          example: 400000
+          minimum: 0
+        transaction:
+          $ref: '#/components/schemas/String'
+    WithdrawMarginPayload:
+      type: object
+      required:
+      - owner
+      - margin_account_id
+      - margin
+      properties:
+        exchange_id:
+          type:
+          - string
+          - 'null'
+          description: |-
+            Optional: default is exchange ID=0 because ID=0 is the only live exchange.
+            Either 1) the exchange's ID used in its PDA or 2) the exchange's full address.
+          example: 0 | 82dGS7Jt4Km8ZgwZVRsJ2V6vPXEhVdgDaMP7cqPGG1TW | null
+        keeper_tip:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 0
+        margin:
+          type: integer
+          format: int64
+          example: 25000000
+          minimum: 0
+        margin_account_id:
+          type: string
+          description: Either 1) the margin account's ID used in its PDA or 2) the margin account's full address.
+          example: 0 | 1111111111111111111111111111111111111111111
+        owner:
+          type: string
+          description: Address of the margin account's owner.
+          example: '1111111111111111111111111111111111111111111'
+        priority_fee_percentile:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: 'Optional: priority fee percentile as a basis points number where 50th percentile is 5000. Default is 80th percentile.'
+          example: 8000
+          minimum: 0
+        settlement_request_id:
+          type:
+          - string
+          - 'null'
+          example: 2 | null
+    u32:
+      type: integer
+      format: int32
+      minimum: 0
+    u64:
+      type: integer
+      format: int64
+      minimum: 0
+tags:
+- name: v3-api
+  description: parcl-v3 api for developers

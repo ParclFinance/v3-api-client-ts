@@ -1,0 +1,17 @@
+#folders
+dist
+node_modules
+tests
+
+#files
+*.env
+.env*
+*.log
+!.env.example
+env.list
+
+#OSX
+.DS_Store
+
+#visual-studio-code
+.vscode/

@@ -1,0 +1,3 @@
+- npm version [major | minor | patch]
+- pnpm build
+- npm publish --access public
